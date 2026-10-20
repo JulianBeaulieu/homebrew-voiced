@@ -1,10 +1,11 @@
-# Homebrew cask for the voiced menu bar app. Lives in this repository for review;
-# the release workflow fills in `version` and `sha256` for a tag, and the result
-# goes to the tap's Casks/ (see ../README.md). The cask waits for a Developer ID
-# signed and notarized release (ADR 0017, "The end-user path"; ADR 0018).
+# Homebrew cask for the voiced menu bar app: it installs the Developer ID signed,
+# notarized voiced.app from a GitHub release (ADR 0017, "The end-user path";
+# ADR 0018). Lives in this repository for review; for each tag the release
+# workflow fills in `version` and the zip's `sha256`, and the result goes to the
+# tap's Casks/ (see ../README.md).
 cask "voiced" do
-  version "0.1.0"
-  sha256 "185d562e3e2da0fcc6b6eba551962e4de9cffad51f69f27e1170327c22d4b55f"
+  version "0.1.1"
+  sha256 "20efd50c91fd3d80dfd3e6f6d88a9dbf1e2ac150cd58c364732f1062e3e1de2a"
 
   url "https://github.com/JulianBeaulieu/voiced/releases/download/v#{version}/voiced-#{version}-macos.zip"
   name "voiced"
