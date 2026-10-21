@@ -7,8 +7,8 @@ class Voiced < Formula
 
   desc "Local speech-to-text and text-to-speech server for Apple Silicon"
   homepage "https://github.com/JulianBeaulieu/voiced"
-  url "https://github.com/JulianBeaulieu/voiced/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "ba0b057d73d6ac7647b61baf5c1faba1b08d18db645ee24de9663c5c73367f24"
+  url "https://github.com/JulianBeaulieu/voiced/archive/refs/tags/v0.3.0.tar.gz"
+  sha256 "1e793ce020d4b56de3dde156d89febe2cf797ffe8d24cb04e40a8116531769d3"
   license "MIT"
   head "https://github.com/JulianBeaulieu/voiced.git", branch: "main"
 

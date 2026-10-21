@@ -4,8 +4,8 @@
 # workflow fills in `version` and the zip's `sha256`, and the result goes to the
 # tap's Casks/ (see ../README.md).
 cask "voiced" do
-  version "0.2.0"
-  sha256 "f8a58d891d08b9b780f8492819f8e0ce63e3cdb42af999b76c8e7519360def8e"
+  version "0.3.0"
+  sha256 "93b97bdf72f2549726f43c0a3f39a69bd6ef77c7c497cc4cbe48e9310852efb4"
 
   url "https://github.com/JulianBeaulieu/voiced/releases/download/v#{version}/voiced-#{version}-macos.zip"
   name "voiced"
