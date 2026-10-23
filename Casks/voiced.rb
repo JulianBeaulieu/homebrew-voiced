@@ -4,8 +4,8 @@
 # workflow fills in `version` and the zip's `sha256`, and the result goes to the
 # tap's Casks/ (see ../README.md).
 cask "voiced" do
-  version "0.4.0"
-  sha256 "8d7e3c1123d0d85a5c70fd5e20e85b51e8061bccc8080ed2cab7daff0eebdc83"
+  version "0.5.0"
+  sha256 "a8e00f91831f7cbe03617026880fdbe2695b4be6def4d11d9746fb07080fe1d3"
 
   url "https://github.com/JulianBeaulieu/voiced/releases/download/v#{version}/voiced-#{version}-macos.zip"
   name "voiced"
@@ -17,33 +17,50 @@ cask "voiced" do
     strategy :github_latest
   end
 
-  # No auto_updates: the app does not update itself; `brew upgrade --cask voiced`
-  # does (ADR 0018, "Updating the app itself").
+  # The app updates itself (ADR 0034), so `brew upgrade` leaves it to the app;
+  # `brew upgrade --cask voiced` still updates it when asked.
+  auto_updates true
   depends_on arch: :arm64
   depends_on macos: :sonoma
 
   app "voiced.app"
 
-  uninstall launchctl: [
-              "io.github.julianbeaulieu.voiced.stt",
-              "io.github.julianbeaulieu.voiced.tts",
-              "io.github.julianbeaulieu.voiced.watchdog",
-            ],
-            quit:      "io.github.julianbeaulieu.voiced.menubar",
-            delete:    [
-              "/Library/LaunchDaemons/io.github.julianbeaulieu.voiced.stt.plist",
-              "/Library/LaunchDaemons/io.github.julianbeaulieu.voiced.tts.plist",
-              "/Library/LaunchDaemons/io.github.julianbeaulieu.voiced.watchdog.plist",
-            ]
+  # The services are not the cask's: `voiced install` writes them as the user's
+  # LaunchAgents when the app first opens (ADR 0035). Homebrew runs `uninstall` on
+  # upgrade and reinstall too, so it only quits the app; `--zap` removes the services.
+  # Not `launchctl:`, which also looks for each label in the system domain with sudo,
+  # and so would prompt for administrator credentials: `zap` boots the agents out of
+  # the user's own domain by their plists, then trashes the plists. The uid and the
+  # home are the shell's, read when it runs, not when the cask is loaded.
+  uninstall quit: "io.github.julianbeaulieu.voiced.menubar"
 
-  zap trash: "~/Library/Application Support/voiced"
+  agents = %w[stt tts watchdog].map { |s| "Library/LaunchAgents/io.github.julianbeaulieu.voiced.#{s}.plist" }
+  zap script: {
+        executable:   "/bin/sh",
+        args:         [
+          "-c",
+          "/bin/launchctl bootout \"gui/$(/usr/bin/id -u)\" #{agents.map { |a| "\"$HOME/#{a}\"" }.join(" ")}",
+        ],
+        must_succeed: false,
+      },
+      trash:  ["~/Library/Application Support/voiced", *agents.map { |a| "~/#{a}" }]
 
   caveats <<~EOS
-    voiced.app installs the voiced services the first time it opens.
+    voiced.app installs the voiced services the first time it opens,
+    without a password. They run as you while you are logged in.
 
-    `brew uninstall --cask voiced` stops and removes the services, and `--zap`
-    also removes the app's uv cache. Neither removes ~/.voiced, the config in
-    ~/.config/voiced or the downloaded models: use Uninstall in the app's
-    Settings first to remove those.
+    `brew upgrade --cask voiced` leaves the services running.
+    The app updates them on its next launch.
+    Coming from 0.4.0 or earlier, this upgrade asked for a password
+    to remove the old services: open voiced.app now to install the
+    new ones; until then voiced is down.
+
+    `brew uninstall --cask voiced` leaves the services running.
+    To remove them:
+      before it, Uninstall in the app's Settings;
+      or `brew uninstall --zap --cask voiced`;
+      or afterwards, the `voiced uninstall` steps in docs/operations.md.
+    Only the app and `voiced uninstall` can also remove ~/.voiced,
+    the config in ~/.config/voiced and the downloaded models.
   EOS
 end
