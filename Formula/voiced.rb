@@ -7,8 +7,8 @@ class Voiced < Formula
 
   desc "Local speech-to-text and text-to-speech server for Apple Silicon"
   homepage "https://github.com/JulianBeaulieu/voiced"
-  url "https://github.com/JulianBeaulieu/voiced/archive/refs/tags/v0.5.0.tar.gz"
-  sha256 "2d658555111cde0684a3438bd9296a16cca330e042bd0909773b5677c4204838"
+  url "https://github.com/JulianBeaulieu/voiced/archive/refs/tags/v0.5.1.tar.gz"
+  sha256 "0d739f0d1f9265cf3d2f3e4a128ba914f09859d3d2f6c3511fbe90a1480554f6"
   license "MIT"
   head "https://github.com/JulianBeaulieu/voiced.git", branch: "main"
 
@@ -55,15 +55,19 @@ class Voiced < Formula
         voiced install
 
       It links ~/.voiced/bin/voiced to this formula, downloads the models
-      (about 2.7 GB) and loads the services. No sudo. Then `voiced status`.
+      (about 2.7 GB) and loads the services. No sudo. Run it logged in at the
+      Mac (Screen Sharing counts); over SSH alone it stops before it changes
+      anything. Then `voiced status`.
 
       Upgrade with `brew upgrade voiced` (for a `--HEAD` install, `brew upgrade
       --fetch-HEAD voiced`); once it has removed the old version, the watchdog
       moves the services to the new one. With HOMEBREW_NO_INSTALL_CLEANUP set,
       run `voiced restart all` after the upgrade instead. After the first
-      upgrade from 0.4.0 or earlier, run `voiced install` once more: it prints
-      the one line that removes the old LaunchDaemons; until then the watchdog
-      cannot restart a hung service.
+      upgrade from 0.5.0 or earlier, run `voiced install` once more: from
+      0.5.1 its plists have launchd open the services' stdout and stderr
+      logs, and from 0.4.0 or earlier it prints the one line that removes the
+      old LaunchDaemons, without which the watchdog cannot restart a hung
+      service.
 
       Before `brew uninstall voiced`, run `voiced uninstall --yes`; otherwise
       launchd stops the services, since their program is gone, but keeps them
